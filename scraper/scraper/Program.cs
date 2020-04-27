@@ -14,19 +14,22 @@ namespace scraper
             CreateSpider(
                 url: "https://tretton37.com:443",
                 archiveRoot: Path.Join(Directory.GetCurrentDirectory(), ".\\.archive"),
-                logLevel: LogLevel.Information
+                logLevel: LogLevel.Information,
+                uriKeyFactory: uri => uri.ToString().ToLower()
                 )
                 .ProcessPage("/")
                 .Wait();
         }
 
-        static ISpider CreateSpider(string url, string archiveRoot, LogLevel logLevel)
+        static ISpider CreateSpider(string url, string archiveRoot, Func<Uri, string> uriKeyFactory, LogLevel logLevel )
         {
+            // Wire a spider with dependencies derived from passed options
             var logger = CreateLogger(logLevel);
             Uri root = new Uri(url);
             return new Spider(
                 uriMapper: new UriMapper(root),
-                uriTracker: new UriTracker(),
+                uriTracker: new UriTracker(uriKeyFactory),
+                pageLoader: new PageLoader(),
                 pageArchive: new PageArchive(
                     options: new PageArchiveOptions { ArchiveRoot = archiveRoot },
                     logger: logger),

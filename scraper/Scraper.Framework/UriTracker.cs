@@ -5,12 +5,20 @@ namespace Scraper.Framework
 {
     public class UriTracker : IUriTracker
     {
-        protected HashSet<string> TrackedUris { get; }
+        protected Func<Uri, string> UriKeyFactory;
 
-        public UriTracker (bool ignoreCase = true)
+        public static readonly Func<Uri, string> DefaultUriKeyFactory = (Uri uri) => uri.ToString().ToLower();
+
+        protected HashSet<string> TrackedUris { get; } = new HashSet<string>();
+
+
+        public UriTracker(): this(DefaultUriKeyFactory) { }
+
+        public UriTracker(Func<Uri, string> uriKeyFactory)
         {
-            TrackedUris = ignoreCase ? new HashSet<string>(StringComparer.OrdinalIgnoreCase) : new HashSet<string>();
+            UriKeyFactory = uriKeyFactory ?? DefaultUriKeyFactory;
         }
+
         public Uri TrackUri(Uri uri)
         {
             if (uri == null)
@@ -20,7 +28,7 @@ namespace Scraper.Framework
             // ensure tracking is mutually exclusive
             lock (this)
             {
-                if (!TrackedUris.Add(uri.ToString()))
+                if (!TrackedUris.Add(UriKeyFactory(uri)))
                 {
                     return null;
                 }

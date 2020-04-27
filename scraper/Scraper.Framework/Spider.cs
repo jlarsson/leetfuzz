@@ -8,10 +8,11 @@ namespace Scraper.Framework
 {
     public class Spider: ISpider
     {
-        public Spider(UriMapper uriMapper, UriTracker uriTracker, PageArchive pageArchive, PageParser pageParser, ILogger logger)
+        public Spider(IUriMapper uriMapper, IUriTracker uriTracker, IPageLoader pageLoader, IPageArchive pageArchive, IPageParser pageParser, ILogger logger)
         {
             UriMapper = uriMapper;
             UriTracker = uriTracker;
+            PageLoader = pageLoader;
             PageArchive = pageArchive;
             PageParser = pageParser;
             Logger = logger;
@@ -19,6 +20,7 @@ namespace Scraper.Framework
 
         public IUriMapper UriMapper { get; }
         public IUriTracker UriTracker { get; }
+        public IPageLoader PageLoader { get; }
         public IPageArchive PageArchive { get; }
         public IPageParser PageParser { get; }
         public ILogger Logger { get; }
@@ -47,19 +49,15 @@ namespace Scraper.Framework
             }
 
             // Fetch page
-            // TODO: This is rude (considered DOS) and we should actually throttle this through a semaphore
-            using (WebClient webClient = new WebClient())
-            {
-                var pageContent = await webClient.DownloadStringTaskAsync(pageUri);
+            var pageContent = await PageLoader.DownloadPage(pageUri);
 
-                // parallell: Ensure page is saved
-                var saveCompletion = PageArchive.SavePage(pageUri, pageContent);
-                // paralell: Process links
-                var crawlCompletion = ProcessLinks(pageUri, pageContent);
+            // parallell: Ensure page is saved
+            var saveCompletion = PageArchive.SavePage(pageUri, pageContent);
+            // paralell: Process links
+            var crawlCompletion = ProcessLinks(pageUri, pageContent);
 
-                // wait for all parallell
-                await Task.WhenAll(saveCompletion, crawlCompletion);
-            }
+            // wait for all parallell
+            await Task.WhenAll(saveCompletion, crawlCompletion);
         }
 
         private async Task ProcessLinks(Uri uri, string content)
