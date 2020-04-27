@@ -9,8 +9,8 @@ namespace scraper
     {
         static void Main(string[] args)
         {
-            // Create spider, rhun it and wait for completion
-            // NOTE: we wire every dependency manually and skips DI frameworks altogehter, though teh code is somewhat prepared for it
+            // Create spider, run it and wait for completion
+            // NOTE: we wire every dependency manually and skips DI frameworks altogehter, albeit the code is somewhat prepared for DI
             CreateSpider(
                 url: "https://tretton37.com:443",
                 archiveRoot: Path.Join(Directory.GetCurrentDirectory(), ".\\.archive"),

@@ -27,6 +27,15 @@ namespace Scraper.Framework
         {
             return ProcessPage(UriMapper.MapLink(link));
         }
+        /// <summary>
+        /// Process page by
+        /// - skipping if already visited/processed
+        /// - skipping if invalid (i.e. leaves main domain)
+        /// - archive contents
+        /// - recursively process links
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
         public async Task ProcessPage(Uri uri)
         {
             var pageUri = UriTracker.TrackUri(UriMapper.MapUri(uri));
@@ -38,8 +47,7 @@ namespace Scraper.Framework
             }
 
             // Fetch page
-
-            // TODO: This is rude (DOS) and we should actually throttle this through a semaphore
+            // TODO: This is rude (considered DOS) and we should actually throttle this through a semaphore
             using (WebClient webClient = new WebClient())
             {
                 var pageContent = await webClient.DownloadStringTaskAsync(pageUri);

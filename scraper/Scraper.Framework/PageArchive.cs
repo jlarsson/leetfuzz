@@ -6,10 +6,6 @@ using System.Threading.Tasks;
 
 namespace Scraper.Framework
 {
-    public class PageArchiveOptions
-    {
-        public string ArchiveRoot { get; set; }
-    }
     public class PageArchive : IPageArchive
     {
         public PageArchiveOptions Options { get; }
@@ -23,6 +19,11 @@ namespace Scraper.Framework
 
         public async Task SavePage(Uri uri, string content)
         {
+            // Outline
+            //  Given http://somehting.com/a/b/c
+            //  - ensure folder ...\a\b\c
+            //  - write content to ...\a\b\c\.content
+
             var folderPath = Path.GetFullPath(Path.Combine(
                 new[] { Options.ArchiveRoot }.Concat(uri.LocalPath.Split('/')).ToArray()));
             var filePath = Path.Combine(folderPath, ".contents");

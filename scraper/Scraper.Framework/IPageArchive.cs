@@ -5,6 +5,10 @@ namespace Scraper.Framework
 {
     public interface IPageArchive
     {
+        /// <summary>
+        /// Persist crawled page
+        /// </summary>
+
         Task SavePage(Uri uri, string content);
     }
 }
