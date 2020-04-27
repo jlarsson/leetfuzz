@@ -8,7 +8,7 @@ namespace scraper
     {
         static void Main(string[] args)
         {
-            Scrape("https://tretton37.com").Wait();
+            Scrape("https://tretton37.com:443").Wait();
 
             Console.WriteLine("done");
         }
@@ -17,6 +17,12 @@ namespace scraper
         {
             Uri root = new Uri(url);
             var spider = new Spider()
+            {
+                UriMapper = new UriMapper(root),
+                UriTracker = new UriTracker(),
+                PageArchive = new PageArchive(),
+                PageParser = new PageParser()
+            };
             await spider.ProcessPage("/");
         }
     }

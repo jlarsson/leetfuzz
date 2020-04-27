@@ -1,30 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
 namespace Scraper.Framework
 {
-    public interface IUriMapper
-    {
-        Uri MapLink(string link);
-        Uri MapUri(Uri uri);
-    }
-    public interface IUriTracker
-    {
-        Uri TrackUri(Uri uri);
-    }
-
-    public interface IPageArchive
-    {
-        Task SavePage(Uri uri, string content);
-    }
-
-    public interface IPageParser
-    {
-        IEnumerable<string> ParseLinks(string content);
-    }
     public class Spider
     {
         WebClient WebClient { get; set; } = new WebClient();

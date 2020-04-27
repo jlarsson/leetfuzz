@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "scraper", "scraper\scraper.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scraper.Framework", "Scraper.Framework\Scraper.Framework.csproj", "{04F3D214-A2ED-45A8-AC63-DBA0EBCA8071}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scraper.Framework.Tests", "Scraper.Framework.Tests\Scraper.Framework.Tests.csproj", "{F30086CB-6E6E-4A1D-AB2F-0AABF663C380}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{04F3D214-A2ED-45A8-AC63-DBA0EBCA8071}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04F3D214-A2ED-45A8-AC63-DBA0EBCA8071}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04F3D214-A2ED-45A8-AC63-DBA0EBCA8071}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F30086CB-6E6E-4A1D-AB2F-0AABF663C380}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F30086CB-6E6E-4A1D-AB2F-0AABF663C380}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F30086CB-6E6E-4A1D-AB2F-0AABF663C380}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F30086CB-6E6E-4A1D-AB2F-0AABF663C380}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
