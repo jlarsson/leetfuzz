@@ -7,7 +7,6 @@ namespace Scraper.Framework
 {
     public class Spider
     {
-        WebClient WebClient { get; set; } = new WebClient();
         public IUriMapper UriMapper { get; set; }
         public IUriTracker UriTracker { get; set; }
         public IPageArchive PageArchive { get; set; }
@@ -27,15 +26,20 @@ namespace Scraper.Framework
             }
 
             // Fetch page
-            var pageContent = await WebClient.DownloadStringTaskAsync(pageUri);
 
-            // parallell: Ensure page is saved
-            var saveCompletion = PageArchive.SavePage(pageUri, pageContent);
-            // paralell: Process links
-            var crawlCompletion = ProcessLinks(pageUri, pageContent);
+            // TODO: This is rude (DOS) and we should actually throttle this through a semaphore
+            using (WebClient webClient = new WebClient())
+            {
+                var pageContent = await webClient.DownloadStringTaskAsync(pageUri);
 
-            // wait for all parallell
-            await Task.WhenAll(saveCompletion, crawlCompletion);
+                // parallell: Ensure page is saved
+                var saveCompletion = PageArchive.SavePage(pageUri, pageContent);
+                // paralell: Process links
+                var crawlCompletion = ProcessLinks(pageUri, pageContent);
+
+                // wait for all parallell
+                await Task.WhenAll(saveCompletion, crawlCompletion);
+            }
         }
 
         private async Task ProcessLinks(Uri uri, string content)

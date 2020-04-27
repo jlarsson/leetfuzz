@@ -5,7 +5,7 @@ namespace Scraper.Framework
     public class UriMapper : IUriMapper
     {
         public UriMapper(Uri baseUri) {
-            BaseUri = baseUri;
+            BaseUri = ExpandUri(baseUri);
         }
 
         public UriMapper(string baseUri): this(new Uri(baseUri))
@@ -16,14 +16,18 @@ namespace Scraper.Framework
 
         public Uri MapLink(string link)
         {
-            return string.IsNullOrEmpty(link) ? null : ValidateAndSanitizeUri(new Uri(BaseUri, link));
+            return string.IsNullOrEmpty(link) ? null : ValidateAndSanitizeUri(ExpandUri(new Uri(BaseUri, link)));
         }
 
         public Uri MapUri(Uri uri)
         {
-            return uri == null ? null : ValidateAndSanitizeUri(new Uri(BaseUri,uri));
+            return uri == null ? null : ValidateAndSanitizeUri(ExpandUri(new Uri(BaseUri,uri)));
         }
 
+        protected Uri ExpandUri (Uri uri)
+        {
+            return new UriBuilder(uri).Uri;
+        }
         protected Uri ValidateAndSanitizeUri(Uri uri) { 
             if (uri == null)
             {

@@ -2,7 +2,6 @@
 
 namespace Scraper.Framework.Tests
 {
-
     [TestClass]
     public class UriMapperTests
     {
