@@ -1,16 +1,27 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
 namespace Scraper.Framework
 {
-    public class Spider
+    public class Spider: ISpider
     {
-        public IUriMapper UriMapper { get; set; }
-        public IUriTracker UriTracker { get; set; }
-        public IPageArchive PageArchive { get; set; }
-        public IPageParser PageParser { get; set; }
+        public Spider(UriMapper uriMapper, UriTracker uriTracker, PageArchive pageArchive, PageParser pageParser, ILogger logger)
+        {
+            UriMapper = uriMapper;
+            UriTracker = uriTracker;
+            PageArchive = pageArchive;
+            PageParser = pageParser;
+            Logger = logger;
+        }
+
+        public IUriMapper UriMapper { get; }
+        public IUriTracker UriTracker { get; }
+        public IPageArchive PageArchive { get; }
+        public IPageParser PageParser { get; }
+        public ILogger Logger { get; }
 
         public Task ProcessPage(string link)
         {
@@ -21,6 +32,7 @@ namespace Scraper.Framework
             var pageUri = UriTracker.TrackUri(UriMapper.MapUri(uri));
             if (pageUri == null)
             {
+                Logger.LogDebug($"skipped uri: {uri}");
                 // uri is invalid, already visited or in progress
                 return;
             }

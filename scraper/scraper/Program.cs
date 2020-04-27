@@ -2,7 +2,6 @@
 using Scraper.Framework;
 using System;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace scraper
 {
@@ -10,23 +9,35 @@ namespace scraper
     {
         static void Main(string[] args)
         {
-            Scrape(
+            // Create spider, rhun it and wait for completion
+            // NOTE: we wire every dependency manually and skips DI frameworks altogehter, though teh code is somewhat prepared for it
+            CreateSpider(
                 url: "https://tretton37.com:443",
-                archiveRoot: Path.Join(Directory.GetCurrentDirectory(), ".\\.archive")
-                ).Wait();
+                archiveRoot: Path.Join(Directory.GetCurrentDirectory(), ".\\.archive"),
+                logLevel: LogLevel.Information
+                )
+                .ProcessPage("/")
+                .Wait();
         }
 
-        static async Task Scrape(string url, string archiveRoot)
+        static ISpider CreateSpider(string url, string archiveRoot, LogLevel logLevel)
         {
+            var logger = CreateLogger(logLevel);
             Uri root = new Uri(url);
-            var spider = new Spider()
-            {
-                UriMapper = new UriMapper(root),
-                UriTracker = new UriTracker(),
-                PageArchive = new PageArchive(archiveRoot),
-                PageParser = new PageParser()
-            };
-            await spider.ProcessPage("/");
+            return new Spider(
+                uriMapper: new UriMapper(root),
+                uriTracker: new UriTracker(),
+                pageArchive: new PageArchive(
+                    options: new PageArchiveOptions { ArchiveRoot = archiveRoot },
+                    logger: logger),
+                pageParser: new PageParser(),
+                logger: logger
+            );
+        }
+
+        static ILogger CreateLogger(LogLevel logLevel)
+        {
+            return new ConsoleLogger(logLevel);
         }
     }
 }

@@ -2,26 +2,32 @@
 
 namespace Scraper.Framework
 {
+    public class UriMapperOptions
+    {
+        public Uri BaseUri { get; set; }
+    }
     public class UriMapper : IUriMapper
     {
-        public UriMapper(Uri baseUri) {
-            BaseUri = ExpandUri(baseUri);
+        public UriMapper(UriMapperOptions options) {
+            Options = options;
+        }
+        public UriMapper(Uri baseUri): this(new UriMapperOptions { BaseUri = baseUri }) {
         }
 
         public UriMapper(string baseUri): this(new Uri(baseUri))
         {
         }
 
-        public Uri BaseUri { get; }
+        public UriMapperOptions Options { get; }
 
         public Uri MapLink(string link)
         {
-            return string.IsNullOrEmpty(link) ? null : ValidateAndSanitizeUri(ExpandUri(new Uri(BaseUri, link)));
+            return string.IsNullOrEmpty(link) ? null : ValidateAndSanitizeUri(ExpandUri(new Uri(Options.BaseUri, link)));
         }
 
         public Uri MapUri(Uri uri)
         {
-            return uri == null ? null : ValidateAndSanitizeUri(ExpandUri(new Uri(BaseUri,uri)));
+            return uri == null ? null : ValidateAndSanitizeUri(ExpandUri(new Uri(Options.BaseUri,uri)));
         }
 
         protected Uri ExpandUri (Uri uri)
@@ -38,12 +44,12 @@ namespace Scraper.Framework
                 return null;
             }
 
-            if (BaseUri.Equals(uri))
+            if (Options.BaseUri.Equals(uri))
             {
                 return uri;
             }
 
-            if (!BaseUri.IsBaseOf(uri))
+            if (!Options.BaseUri.IsBaseOf(uri))
             {
                 return null;
             }

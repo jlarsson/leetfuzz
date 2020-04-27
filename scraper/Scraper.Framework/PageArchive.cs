@@ -1,23 +1,30 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Scraper.Framework
 {
+    public class PageArchiveOptions
+    {
+        public string ArchiveRoot { get; set; }
+    }
     public class PageArchive : IPageArchive
     {
-        public PageArchive(string archiveRoot)
-        {
-            ArchiveRoot = archiveRoot;
-        }
+        public PageArchiveOptions Options { get; }
+        public ILogger Logger { get; }
 
-        public string ArchiveRoot { get; }
+        public PageArchive(PageArchiveOptions options, ILogger logger)
+        {
+            Options = options;
+            Logger = logger;
+        }
 
         public async Task SavePage(Uri uri, string content)
         {
             var folderPath = Path.GetFullPath(Path.Combine(
-                new[] { ArchiveRoot }.Concat(uri.LocalPath.Split('/')).ToArray()));
+                new[] { Options.ArchiveRoot }.Concat(uri.LocalPath.Split('/')).ToArray()));
             var filePath = Path.Combine(folderPath, ".contents");
             try
             {
@@ -26,11 +33,11 @@ namespace Scraper.Framework
 
                 await Task.Run(() => File.WriteAllText(filePath, content));
 
-                Console.WriteLine($"saved {uri} to {filePath}");
+                Logger.LogInformation($"saved {uri} to {filePath}");
             }
             catch (Exception err)
             {
-                Console.Error.WriteLine($"failed to save {uri} to {folderPath}");
+                Logger.LogError(err, $"failed to save {uri} to {folderPath}");
             }
         }
     }
